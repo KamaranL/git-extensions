@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+git tag -f -a latest -m latest &&
+    git log -1 latest
+
+exit $?

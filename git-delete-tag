@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+((!$#)) && {
+    echo Error: no args provided
+    exit 1
+}
+
+! git describe --tags --abbrev=0 >/dev/null 2>&1 && {
+    echo Error: no tags available
+    exit 1
+}
+
+pos=()
+del=false
+
+shopt -s extglob
+while (($#)); do
+    case "$1" in
+    -[1-9]*([0-9]))
+        tags=($(git tag | tail -n"$1"))
+        ;;
+    -f | --force)
+        del=true
+        ;;
+    *)
+        pos+=("$1")
+        ;;
+    esac
+    shift
+done
+shopt -u extglob
+
+((${#pos[@]})) &&
+    tags=(${pos[@]})
+
+! $del && {
+    for tag in "${tags[@]}"; do
+        printf "%-21s%s\n" " - [ ]" "$tag"
+    done
+
+    read -p "Completely delete $(
+        ((${#tags[@]} > 1)) &&
+            echo these tags ||
+            echo this tag
+    ) (local & remote)? (Y/n): " answer
+    if [[ "$answer" =~ ^([yY]([eE][sS])?)$ ]]; then
+        del=true
+    else
+        echo No tags have been deleted
+        exit 1
+    fi
+}
+
+$del && {
+    for tag in "${tags[@]}"; do
+        git tag -d "$tag" &&
+            git push origin :"$tag"
+    done
+}
