@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ((!$#)) && {
-    echo Error: no semver provided
+    echo Error: no version provided
     exit 1
 }
 
@@ -10,8 +10,8 @@
     exit 1
 }
 
-[[ ! $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z]+(\.)?[0-9]+)?$ ]] && {
-    echo Error: invalid semver
+[[ ! $1 =~ ^[0-9]+(\.[0-9]+)?(\.[0-9]+)?(-[a-zA-Z]+(\.)?[0-9]+)?$ ]] && {
+    echo Error: invalid version
     exit 1
 }
 
